@@ -10,6 +10,7 @@ import CreateSessionPage from './pages/CreateSessionPage';
 
 // Components
 import ProtectedRoute from './routes/ProtectedRoute';
+import SessionsPage from './pages/SessionsPage';
 
 function App() {
   return (
@@ -46,6 +47,15 @@ function App() {
             }
         />
 
+        <Route
+            path="/sessions"
+            element={
+                <ProtectedRoute>
+                    <SessionsPage/>
+                </ProtectedRoute>
+            }
+        />
+        
         {/* Redirect */}
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="*" element={<Navigate to="/" />} />

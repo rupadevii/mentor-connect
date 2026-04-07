@@ -32,3 +32,21 @@ export const fileToBase64 = (file) => {
     reader.onerror = (error) => reject(error);
   });
 };
+
+export function formatDate(eventDate){
+    const date = new Date(eventDate).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    });
+    return date
+}
+
+export function formatTime(eventTime){
+    const time = new Date(eventTime).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    return time
+}
+

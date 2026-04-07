@@ -250,7 +250,8 @@ export const getSessions = asyncHandler(async (req, res) => {
         query.topic = topicId;
     }
     const date = new Date();
-    const currentTime = `${date.getHours()}:${date.getMinutes()}`;
+    // const currentTime = `${date.getHours()}:${date.getMinutes()}`;
+    const currentTime = date
     if (type === allowedTypes[0]) {
         query = {
             ...query,
@@ -271,7 +272,7 @@ export const getSessions = asyncHandler(async (req, res) => {
     } else if (type === allowedTypes[3]) {
         query = {
             ...query,
-            joineeId: req.userId,
+            joinee: req.userId,
         };
     } else if (type === allowedTypes[4]) {
         query = {
@@ -280,13 +281,14 @@ export const getSessions = asyncHandler(async (req, res) => {
         };
     }
 
-    // Create session
     const sessionsPromise = Session.find(query)
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize)
-        .populate("createdBy joinee", "name email");
+        .populate("createdBy joinee", "name email")
+        .populate("topic", "name");
 
     const totalCountPromise = Session.countDocuments();
+
     const [sessions, totalCount] = await Promise.all([
         sessionsPromise,
         totalCountPromise,

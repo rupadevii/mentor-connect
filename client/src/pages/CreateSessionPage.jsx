@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 
 export default function CreateSessionPage() {
     const [formData, setFormData] = useState({
+        eventName: '',
+        desc: '',
         eventDate: '',
         startTime: '',
         endTime: '',
@@ -16,32 +18,7 @@ export default function CreateSessionPage() {
     const [error, setError] = useState("")
     const [success, setSuccess] = useState('');
     const [user, setUser] = useState(null)
-    const topics = [
-        {
-            level: 1,
-            topic: "Beginner"
-        },
-        {
-            level: 2,
-            topic: "Basic Programming"
-        },
-        {
-            level: 3,
-            topic: "DSA"
-        },
-        {
-            level: 4,
-            topic: "React"
-        },
-        {
-            level: 5,
-            topic: "Backend"
-        },
-        {
-            level: 6,
-            topic: "Full stack"
-        }
-    ]
+    const [topics, setTopics] = useState([])
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -58,17 +35,39 @@ export default function CreateSessionPage() {
         };
 
         loadProfile();
+
     }, []);
+
+    console.log(topics)
+
+    useEffect(() => {
+        const loadTopics = async () => {
+            try{
+                const response = await api.get('/topics')
+                const {data} = await response.data;
+                console.log(data)
+                setTopics(data.filter(item => item.level <= user.level))
+            }catch(err){
+                console.error(error)
+            }
+        }
+
+        loadTopics()
+    }, [user])
     
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        const startDateTime = new Date(`${formData.eventDate}T${formData.startTime}`);
+        const endDateTime = new Date(`${formData.eventDate}T${formData.endTime}`);
 
         try {
-            const response = await api.post('/sessions/create', formData);
+            const response = await api.post('/sessions/', {...formData, startTime: startDateTime.toISOString(), endTime: endDateTime.toISOString()});
             setSuccess('Session created successfully');
             setFormData({
+                eventName: '',
+                desc: '',
                 eventDate: '',
                 startTime: '',
                 endTime: '',
@@ -89,6 +88,7 @@ export default function CreateSessionPage() {
             }));
         setError('');
     };
+
     console.log(formData)
     return (
         <Layout>
@@ -97,13 +97,36 @@ export default function CreateSessionPage() {
             <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="flex items-center gap-4 pb-2 flex-col">
                     <div className='w-full'>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Event Name:</label>
+                        <input
+                            type="text"
+                            name="eventName"
+                            value={formData.eventName}
+                            onChange={handleChange}
+                            placeholder="Enter event name"
+                            className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
+                            required
+                        />
+                    </div>
+                    <div className='w-full'>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Event Description:</label>
+                        <textarea
+                            name="desc"
+                            value={formData.desc}
+                            onChange={handleChange}
+                            placeholder="Enter event description"
+                            className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
+                            required
+                        ></textarea>
+                    </div>
+                    <div className='w-full'>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Event Date:</label>
                         <input
                             type="date"
                             name="eventDate"
                             value={formData.eventDate}
                             onChange={handleChange}
-                            placeholder="Enter your name"
+                            placeholder="Enter event date"
                             className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
                             required
                         />
@@ -140,13 +163,14 @@ export default function CreateSessionPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-2">Topic</label>
                         <select
                             name="topic"
-                            value={formData.topic}
+                            // value={formData.topic}
                             onChange={handleChange}
                             className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
                         >
-                            {topics.slice(0, user?.level).map((item) => (
-                            <option key={item.level} value={item.topic}>
-                                {item.topic}
+                            <option>Select</option>
+                            {topics?.map((item) => (
+                            <option key={item.level} value={item._id}>
+                                {item.name}
                             </option>
                             ))}
                         </select>

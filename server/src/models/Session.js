@@ -16,11 +16,11 @@ const sessionSchema = new mongoose.Schema(
             required: [true, 'Desc is required.']
         },
         startTime: {
-            type: String,
+            type: Date,
             required: [true, 'Start time is required'],
         },
         endTime: {
-            type: String,
+            type: Date,
             required: [true, 'End time is required'],
         },
         topic: {

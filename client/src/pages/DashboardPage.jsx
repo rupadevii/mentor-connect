@@ -22,9 +22,9 @@ const DashboardPage = () => {
             </div>
             
             <div className="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 p-6 border border-purple-200">
-              <div className="text-4xl mb-2">📝</div>
-              <h2 className="font-semibold text-slate-900">Sessions</h2>
-              <p className="text-slate-600 text-sm mt-1">Schedule sessions</p>
+                <div className="text-4xl mb-2">📝</div>
+                <h2 className="font-semibold text-slate-900">Sessions</h2>
+                <p className="text-slate-600 text-sm mt-1">Schedule sessions</p>
             </div>
           </div>
         </div>

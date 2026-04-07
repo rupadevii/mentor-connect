@@ -15,13 +15,13 @@ const Header = ({ onMenuClick, onToggleCollapse, isSidebarCollapsed, user }) => 
         </button>
 
         {/* Collapse button for desktop */}
-        <button
+        {/* <button
           onClick={onToggleCollapse}
           className="hidden md:inline-flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-indigo-600 hover:border-indigo-200 transition-colors"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isSidebarCollapsed ? '→' : '←'}
-        </button>
+        </button> */}
       </div>
 
       {/* Logo */}
