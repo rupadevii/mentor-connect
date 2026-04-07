@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
+import CreateSessionPage from './pages/CreateSessionPage';
 
 // Components
 import ProtectedRoute from './routes/ProtectedRoute';
@@ -34,6 +35,15 @@ function App() {
               <ProfilePage />
             </ProtectedRoute>
           }
+        />
+
+        <Route
+            path="/create"
+            element={
+                <ProtectedRoute>
+                    <CreateSessionPage/>
+                </ProtectedRoute>
+            }
         />
 
         {/* Redirect */}

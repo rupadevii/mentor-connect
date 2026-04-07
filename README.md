@@ -347,11 +347,5 @@ npm run dev
 
 MIT - Feel free to use for learning and projects!
 
-## 🤝 Contributing
-
-This is a starter template. Feel free to customize and extend it!
-
----
-
 **Happy Coding! 🎉**
 

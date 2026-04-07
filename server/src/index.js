@@ -6,6 +6,9 @@ import { connectDB } from './config/db.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import sessionRoutes from './routes/sessionRoutes.js'
+import topicRoutes from './routes/topicRoutes.js'
+import { sessionsStatusUpdater } from './jobs/statusUpdater.js';
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +18,7 @@ const app = express();
 
 // Connect to database
 connectDB();
+sessionsStatusUpdater();
 
 // Middleware
 app.use(express.json());
@@ -32,6 +36,8 @@ app.use(
 // Routes
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
+app.use('/sessions', sessionRoutes);
+app.use('/topics', topicRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
