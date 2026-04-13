@@ -202,16 +202,6 @@ export const cancelSession = asyncHandler(async (req, res) => {
         .json({ message: "Session Booked succesfully", data: session });
 })
 
-// ZOD Effect
-// const getSessionDetailsPayloadSchema = z.object({
-//   topicId: z.string().optional(), // Assuming topicId should be a string if present
-//   type: z
-//     .enum(["Upcoming", "Cancelled", "Past", "My Bookings", "My Sessions"])
-//     .default("Upcoming"),
-//   pageNumber: z.coerce.number().int().positive().default(1),
-//   pageSize: z.coerce.number().int().positive().default(10),
-// });
-
 export const getSessions = asyncHandler(async (req, res) => {
     const {
         topicId,
@@ -219,13 +209,6 @@ export const getSessions = asyncHandler(async (req, res) => {
         pageNumber = 1,
         pageSize = 10,
     } = req.query;
-
-    // const result = getSessionDetailsPayloadSchema.safeParse(req.query);
-    // if (!result.success) {
-    //     // Handle validation errors
-    //     console.error(result.error);
-    //     return res.status(400).json({ error: result.error });
-    // }
 
     console.log("topicId", topicId);
 
@@ -258,6 +241,7 @@ export const getSessions = asyncHandler(async (req, res) => {
             status: { $in: ["AVAILABLE", "BOOKED"] },
             eventDate: { $gt: date },
             startTime: { $gt: currentTime },
+            createdBy: {$ne: req.userId}
         };
     } else if (type === allowedTypes[1]) {
         query = {
@@ -284,7 +268,7 @@ export const getSessions = asyncHandler(async (req, res) => {
     const sessionsPromise = Session.find(query)
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize)
-        .populate("createdBy joinee", "name email")
+        .populate("createdBy joinee", "name email profilePicture")
         .populate("topic", "name");
 
     const totalCountPromise = Session.countDocuments();
@@ -364,7 +348,7 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
                     $sum: { $cond: [{ $eq: ["$status", "CANCELLED"] }, 1, 0] },
                 },
                 booked: {
-                    $sum: { $cond: [{ $ne: ["$joineeId", null] }, 1, 0] },
+                    $sum: { $cond: [{ $ne: ["$joinee", null] }, 1, 0] },
                 },
             },
         },

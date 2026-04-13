@@ -2,21 +2,17 @@ import cron from "node-cron";
 import Session from "../models/Session.js";
 
 export const sessionsStatusUpdater = () => {
-  // This cron job will run everyhour to update the staus
   cron.schedule("0 * * * *", async () => {
     try {
-      // every hr-  0 * * * *
       console.log("running a task every hour");
 
-      // Usecase-1 update the status
+    //   const now = new Date();
+    //   const hrs = now.getHours().toString().padStart(2, "0");
+    //   const mins = now.getMinutes().toString().padStart(2, "0");
+    //   let currentTime = `${hrs}:${mins}`;
 
-      const now = new Date();
-      const hrs = now.getHours().toString().padStart(2, "0");
-      const mins = now.getMinutes().toString().padStart(2, "0");
-      let currentTime = `${hrs}:${mins}`;
-
-      console.log("now", now);
-      const currentDate = new Date(now);
+    //   console.log("now", now);
+      const currentDate = new Date();
       console.log("currentDate", currentDate);
 
       const result = await Session.updateMany(
@@ -39,7 +35,7 @@ export const sessionsStatusUpdater = () => {
                 },
                 {
                   endTime: {
-                    $lt: currentTime,
+                    $lt: currentDate,
                   },
                 },
               ],
