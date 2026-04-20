@@ -51,8 +51,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse, user }) => {
           <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between gap-3'}`}>
             {!isCollapsed ? (
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">Accio</h1>
-                <p className="text-slate-300 text-xs">Mentor Connect</p>
+                <h1 className="text-xl font-bold text-white tracking-tight">Mentor Connect</h1>
               </div>
             ) : (
               <h1 className="text-lg font-bold text-white">A</h1>

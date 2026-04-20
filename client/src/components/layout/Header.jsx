@@ -27,7 +27,7 @@ const Header = ({ onMenuClick, onToggleCollapse, isSidebarCollapsed, user }) => 
       {/* Logo */}
       <div className="flex-1 ml-3 md:ml-4">
         <h1 className="text-xl md:text-2xl font-bold text-slate-900">
-          Accio Mentor Connect
+          Mentor Connect
         </h1>
       </div>
 

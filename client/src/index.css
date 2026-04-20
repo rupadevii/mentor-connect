@@ -123,3 +123,7 @@ code {
     /* text-decoration: underline; */
     border-bottom: 2px solid black;
 }
+
+.container::-webkit-scrollbar{
+    display: none;
+}

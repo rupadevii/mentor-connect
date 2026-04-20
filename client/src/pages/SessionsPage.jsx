@@ -17,7 +17,7 @@ export default function SessionsPage() {
 
     async function getSessions(){
         let query = ""
-        if(filter) query = `type=${selectedStatus}&topicId=${filter}`
+        if(filter) query = `type=${selectedStatus}&topic=${filter}`
         else query = `type=${selectedStatus}`
         try{
             const response = await api.get(`/sessions?${query}`)
@@ -159,15 +159,19 @@ export default function SessionsPage() {
             
                                             {selectedStatus==="My Bookings" && (
                                                 <div className='flex gap-3'>
-                                                    <Button>Join</Button>
-                                                    <Button variant='secondary' onClick={() => openModalCancel(session._id)}>Cancel</Button>
+                                                    <Button disabled={session.status === "COMPLETED"}>Join</Button>
+                                                    {session.status !== "COMPLETED" && (
+                                                        <Button variant='secondary' onClick={() => openModalCancel(session._id)}>Cancel</Button>
+                                                    )}
                                                 </div>
                                             )}
             
                                             {selectedStatus==="My Sessions" && (
                                                 <div className='flex gap-3'>
-                                                    <Button>Join</Button>
-                                                    <Button variant='secondary'>Give Feedback</Button>
+                                                        <Button disabled={session.status === "COMPLETED"}>Join</Button>
+                                                    {session.status === "COMPLETED" && (
+                                                        <Button variant='secondary'>Give Feedback</Button>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

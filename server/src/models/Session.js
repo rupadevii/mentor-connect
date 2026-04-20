@@ -50,7 +50,7 @@ const sessionSchema = new mongoose.Schema(
 );
 
 sessionSchema.index({ createdBy: 1, status: 1 });
-sessionSchema.index({ joineeId: 1 });
+sessionSchema.index({ joinee: 1 });
 
 const Session = mongoose.model('Session', sessionSchema);
 
