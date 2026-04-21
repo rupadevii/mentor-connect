@@ -1,32 +1,36 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 // Simple email sending utility
 export const sendEmail = async ({ to, subject, message }) => {
   try {
     // Create transporter
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+    //   host: process.env.SMTP_HOST,
+    //   port: process.env.SMTP_PORT,
+    //   secure: false, // true for 465, false for other ports
+        service: 'gmail',
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
     });
 
     // Send mail
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
-      to,
-      subject,
-      html: message,
+        from: process.env.SMTP_FROM,
+        to,
+        subject,
+        html: message,
     });
 
-    console.log('Email sent successfully');
-  } catch (error) {
-    console.error('Error sending email:', error);
-    throw error;
-  }
+        console.log('Email sent successfully');
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
 };
 
 // Generate reset password email HTML

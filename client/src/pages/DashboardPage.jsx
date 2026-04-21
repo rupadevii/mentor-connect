@@ -52,7 +52,7 @@ const DashboardPage = () => {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
                     <div className='lg:col-span-2 space-y-6 overflow-x-auto'>
-                        {dashboard[3]?.length > 0 && (
+                        {dashboard[3]?.length > 0 ? (
                             <div className="rounded-xl p-6 border border-slate-200">
                                 <div className='flex justify-between'>
                                     <h2 className='text-sm mb-4 font-semibold text-slate-800'>Your upcoming sessions</h2>
@@ -76,6 +76,10 @@ const DashboardPage = () => {
                                         </div>  
                                     ))}
                                 </div>  
+                            </div>
+                        ) : (
+                            <div>
+                                <p>You have no upcoming sessions.</p>
                             </div>
                         )}
 
@@ -115,58 +119,60 @@ const DashboardPage = () => {
                     </div>
 
                     <div className='space-y-6'>
-                        <div className="rounded-lg p-5 border border-purple-200 justify-between">
-                            <h2 className='text-sm text-slate-800 font-semibold'>Session Overview</h2>
-                            <div className='flex justify-center'>
-                                <PieChart width={260} height={180}>
-                                    <Pie
-                                    dataKey="value"
-                                    startAngle={180}
-                                    endAngle={0}
-                                    data={data}
-                                    cx="50%"
-                                    cy="100%"
-                                    outerRadius="120%"
-                                    fill="#8884d8"
-                                    label
-                                    >
-                                        {data?.map((entry, index) => (
-                                            <Cell
-                                            key={index}
-                                            fill={COLORS[entry.name] || COLORS.DEFAULT}
+                        {dashboard[4]?.length > 0 && (
+                            <div className="rounded-lg p-5 border border-purple-200 justify-between">
+                                <h2 className='text-sm text-slate-800 font-semibold'>Session Overview</h2>
+                                <div className='flex justify-center'>
+                                    <PieChart width={260} height={180}>
+                                        <Pie
+                                        dataKey="value"
+                                        startAngle={180}
+                                        endAngle={0}
+                                        data={data}
+                                        cx="50%"
+                                        cy="100%"
+                                        outerRadius="120%"
+                                        fill="#8884d8"
+                                        label
+                                        >
+                                            {data?.map((entry, index) => (
+                                                <Cell
+                                                key={index}
+                                                fill={COLORS[entry.name] || COLORS.DEFAULT}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            formatter={(value, name) => [`${value}`, name]}
+                                            contentStyle={{
+                                                borderRadius: "12px",
+                                                border: "1px solid #e5e7eb"
+                                            }}
                                             />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip
-                                        formatter={(value, name) => [`${value}`, name]}
-                                        contentStyle={{
-                                            borderRadius: "12px",
-                                            border: "1px solid #e5e7eb"
-                                        }}
-                                        />
-                                </PieChart>
-                            </div>
-                            
-                            {dashboard[5]?.length > 0 && (
-                                <div className='mt-4'>
-                                    <p className='text-xs text-slate-400 flex-wrap gap-2'>Created</p>
-                                    {dashboard[5].map(item => (
-                                        <span key={item.topic._id} className='text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded mr-2 shadow'>{item.topicName}</span>
-                                    ))}
+                                    </PieChart>
                                 </div>
-                            )}
-
-                            {dashboard[6]?.length > 0 && (
-                                <div className='mt-4'>
-                                    <p className='text-xs text-slate-400 mb-2'>Booked</p>
-                                    <div className='flex flex-wrap gap-2'>
-                                        {dashboard[6].map(item => (
-                                            <span key={item.topic._id} className='text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded'>{item.topicName}</span>
+                                
+                                {dashboard[5]?.length > 0 && (
+                                    <div className='mt-4'>
+                                        <p className='text-xs text-slate-400 flex-wrap gap-2'>Created</p>
+                                        {dashboard[5].map(item => (
+                                            <span key={item.topic._id} className='text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded mr-2 shadow'>{item.topicName}</span>
                                         ))}
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
+
+                                {dashboard[6]?.length > 0 && (
+                                    <div className='mt-4'>
+                                        <p className='text-xs text-slate-400 mb-2'>Booked</p>
+                                        <div className='flex flex-wrap gap-2'>
+                                            {dashboard[6].map(item => (
+                                                <span key={item.topic._id} className='text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded'>{item.topicName}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <div className='bg-white border border-slate-200 rounded-xl p-6'>
                             <h2 className='text-sm font-semibold text-slate-800 mb-4'>Popular Topics</h2>
