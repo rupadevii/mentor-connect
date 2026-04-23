@@ -4,6 +4,8 @@ import api from '../services/api'
 import Button from '../components/ui/Button'
 import { formatDate, formatTime } from '../utils/helpers'
 import Modal from '../components/ui/Modal'
+import { Link } from 'react-router-dom'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 const status = ["Upcoming", "Cancelled", "Past", "My Bookings", "My Sessions"]
 
 export default function SessionsPage() {
@@ -14,16 +16,22 @@ export default function SessionsPage() {
     const [isOpen, setIsOpen] = useState(false)
     const [sessionId, setSessionId] = useState(null)
     const [action, setAction] = useState(null)
+    const [page, setPage] = useState(1)
+    const [nextPage, setNextPage] = useState(true)
+    const [prevPage, setPrevPage] = useState(true)
 
     async function getSessions(){
         let query = ""
-        if(filter) query = `type=${selectedStatus}&topic=${filter}`
-        else query = `type=${selectedStatus}`
+        if(filter) query = `type=${selectedStatus}&topic=${filter}&pageNumber=${page}`
+        else query = `type=${selectedStatus}&pageNumber=${page}`
         try{
             const response = await api.get(`/sessions?${query}`)
             const data = response.data.data.sessions
             setSessions(data)
-            console.log(data)
+            const status = response.data.data.pagination
+            console.log(status)
+            setNextPage(status.hasNextPage)
+            setPrevPage(status.hasPreviousPage)
         }
         catch(error){
             console.log(error)
@@ -32,7 +40,7 @@ export default function SessionsPage() {
 
     useEffect(() => {
         getSessions()
-    }, [selectedStatus, filter])
+    }, [selectedStatus, filter, page])
 
     useEffect(() => {
         const loadTopics = async () => {
@@ -122,67 +130,73 @@ export default function SessionsPage() {
                     {sessions.length===0 ? (
                         <div className='text-center py-7'>No sessions found.</div>
                     ) : (
-                        <div className='flex flex-wrap justify-center'>
-                            {sessions.map(session => (
-                                <div className="w-[500px] m-4 rounded-xl shadow-lg  bg-gradient-to-br from-purple-50 to-purple-100 p-6 border border-purple-400 cursor-pointer transition-transform duration-200 hover:scale-[1.02]" key={session._id}>
-                                    <div className='flex justify-between'>
-                                        <div className='border border-black rounded-xl p-3 text-center'>
-                                            <p className='text-sm text-gray-600'>{session.createdBy.email}</p>
-                                            <h3 className='mt-1'>
-                                            {session.createdBy.name}
-                                            </h3>
-                                        </div> 
-                                        <div className='text-right'>
-                                            <p className='font-bold text-lg'>{formatDate(session.eventDate)}</p>
-                                            <span>{formatTime(session.startTime)}</span> - <span>{formatTime(session.endTime)}</span>
-                                        </div>
-                                    </div>
-                                    <div className='text-center my-4 h-[75px]'>
-                                        <h2 className='text-lg font-bold'>{session.eventName}</h2>
-                                        <p className='font-extralight text-gray-600 line-clamp-2'>{session.desc}</p>
-                                    </div>
-                                    
-                                    <div className='flex justify-between items-center'>
-                                        <div className='flex items-center'>
-                                            <div className='border border-green-900 rounded-2xl px-2 py-1 text-sm text-green-800'>
-                                                {session.topic.name}
+                        <div className='flex justify-center flex-col'>
+                            <div className='flex flex-wrap justify-center'>
+                                {sessions.map(session => (
+                                    <div className="w-[500px] m-4 rounded-xl shadow-lg  bg-gradient-to-br from-purple-50 to-purple-100 p-6 border border-purple-400 cursor-pointer transition-transform duration-200 hover:scale-[1.02]" key={session._id}>
+                                        <div className='flex justify-between'>
+                                            <div className='border border-black rounded-xl p-3 text-center'>
+                                                <p className='text-sm text-gray-600'>{session.createdBy.email}</p>
+                                                <h3 className='mt-1'>
+                                                {session.createdBy.name}
+                                                </h3>
+                                            </div> 
+                                            <div className='text-right'>
+                                                <p className='font-bold text-lg'>{formatDate(session.eventDate)}</p>
+                                                <span>{formatTime(session.startTime)}</span> - <span>{formatTime(session.endTime)}</span>
                                             </div>
                                         </div>
-                                        <div>
-                                            {(selectedStatus==="Upcoming") && (
-                                                session.status==="BOOKED" ? (
-                                                    <Button variant='secondary'>Booked</Button>
-                                                ) : (
-                                                    <Button onClick={() => openModalBook(session._id)}>Book</Button>
-                                                )
-                                            )}
-            
-                                            {selectedStatus==="My Bookings" && (
-                                                <div className='flex gap-3'>
-                                                    <Button disabled={session.status === "COMPLETED"}>Join</Button>
-                                                    {session.status !== "COMPLETED" && (
-                                                        <Button variant='secondary' onClick={() => openModalCancel(session._id)}>Cancel</Button>
-                                                    )}
-                                                </div>
-                                            )}
-            
-                                            {selectedStatus==="My Sessions" && (
-                                                <div className='flex gap-3'>
-                                                        <Button disabled={session.status === "COMPLETED"}>Join</Button>
-                                                    {session.status === "COMPLETED" && (
-                                                        <Button variant='secondary'>Give Feedback</Button>
-                                                    )}
-                                                </div>
-                                            )}
+                                        <div className='text-center my-4 h-[75px]'>
+                                            <h2 className='text-lg font-bold'>{session.eventName}</h2>
+                                            <p className='font-extralight text-gray-600 line-clamp-2'>{session.desc}</p>
                                         </div>
                                         
+                                        <div className='flex justify-between items-center'>
+                                            <div className='flex items-center'>
+                                                <div className='border border-green-900 rounded-2xl px-2 py-1 text-sm text-green-800'>
+                                                    {session.topic.name}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                {(selectedStatus==="Upcoming") && (
+                                                    session.status==="BOOKED" ? (
+                                                        <Button variant='secondary'>Booked</Button>
+                                                    ) : (
+                                                        <Button onClick={() => openModalBook(session._id)}>Book</Button>
+                                                    )
+                                                )}
+                
+                                                {selectedStatus==="My Bookings" && (
+                                                    <div className='flex gap-3'>
+                                                        <Link to={session.url}><Button disabled={session.status === "COMPLETED"}>Join</Button></Link>
+                                                        {session.status !== "COMPLETED" && (
+                                                            <Button variant='secondary' onClick={() => openModalCancel(session._id)}>Cancel</Button>
+                                                        )}
+                                                    </div>
+                                                )}
+                
+                                                {selectedStatus==="My Sessions" && (
+                                                    <div className='flex gap-3'>
+                                                            <Button disabled={session.status === "COMPLETED"}>Join</Button>
+                                                        {session.status === "COMPLETED" && (
+                                                            <Button variant='secondary'>Give Feedback</Button>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                        {/* {formatDate(session.eventDate)} */}
                                     </div>
                                     
-                                    {/* {formatDate(session.eventDate)} */}
-                                </div>
                                 
-                              
-                            ))}
+                                ))}
+                            </div>
+                            <div className='flex gap-3 justify-center my-5'>
+                                <button onClick={() => setPage(prev => prev-1)} disabled={!prevPage} className='border rounded-md border-black px-1 py-1 disabled:border-stone-200'><ChevronLeft /></button>
+                                <button onClick={() => setPage(prev => prev+1)} disabled={!nextPage} className='border rounded-md border-black px-1 py-1 disabled:border-stone-200'><ChevronRight /></button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -198,6 +212,7 @@ export default function SessionsPage() {
                         <Button variant="danger" onClick={cancelSession}>Cancel</Button>
                     </Modal>
                 )}
+
             </div>
         </Layout>
     )

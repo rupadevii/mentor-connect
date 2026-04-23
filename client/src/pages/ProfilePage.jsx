@@ -136,7 +136,7 @@ const ProfilePage = () => {
                 {isFetching ? (
                     <p className="text-slate-600">Loading profile...</p>
                 ) : (
-                    <form className="space-y-4" onSubmit={handleSubmit}>
+                    <form className="space-y-4 p-4" onSubmit={handleSubmit}>
                         <div className="flex items-center gap-4 pb-2">
                         <div className="w-20 h-20 rounded-full overflow-hidden bg-indigo-600 text-white flex items-center justify-center text-xl font-bold border border-slate-200">
                             {previewUrl ? (
@@ -204,7 +204,7 @@ const ProfilePage = () => {
 
                         <div className="flex gap-4 pt-4">
                         {!isEditing ? (
-                            <button onClick={handleEdit}>Edit Profile</button>
+                            <button className='text-white shadow-md shadow-indigo-600/20 hover:from-indigo-700 hover:to-indigo-900 focus:ring-indigo-500 bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#172554] inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed' onClick={handleEdit}>Edit Profile</button>
                             // <Button variant="primary" type="button" onClick={handleEdit}>
                             //   Edit Profile
                             // </Button>

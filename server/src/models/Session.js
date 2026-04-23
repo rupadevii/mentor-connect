@@ -42,6 +42,10 @@ const sessionSchema = new mongoose.Schema(
             type: String,
             enum: ["AVAILABLE", "BOOKED", "CANCELLED", "COMPLETED"],
             default: "AVAILABLE"
+        },
+        url: {
+            type: String,
+            default: null
         }
     },
     {

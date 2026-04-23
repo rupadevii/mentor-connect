@@ -84,8 +84,10 @@ export const bookSession = asyncHandler(async (req, res) => {
         User.findById(session.joinee).select("email"), 
         createMeeting({desc: session.desc, startTime: session.startTime, endTime: session.endTime})])
 
-    await sendEmail({to: [mentor.email, joinee.email], subject: "Meeting Link", message: `<p>Join the meeting using ${url}</p>`})
-    console.log(url)
+    await Promise.all([
+        Session.findByIdAndUpdate(sessionId, {url}),
+        sendEmail({to: [mentor.email, joinee.email], subject: "Meeting Link", message: `<p>Join the meeting using ${url}</p>`})
+    ])
 
     return res
             .status(200)
@@ -182,13 +184,13 @@ export const getSessions = asyncHandler (async (req, res) => {
         default: query = {}
     }
 
-    const sessionsPromise = Session.find(query)
+    const sessionsPromise = Session.find(query).sort({createdAt: -1})
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize)
-        .populate("createdBy joinee", "name email profilePicture")
+        .populate("createdBy joinee", "name email")
         .populate("topic", "name")
     
-    const totalCountPromise = Session.countDocuments()
+    const totalCountPromise = Session.find(query).countDocuments()
 
     const [sessions, totalCount] = await Promise.all([
         sessionsPromise,
