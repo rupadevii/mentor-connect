@@ -5,7 +5,7 @@ import Topics from "../models/Topic.js";
 import User from "../models/User.js";
 import Topic from "../models/Topic.js";
 import { createMeeting } from "../utils/createMeetings.js";
-import { sendEmail } from "../utils/sendEmail.js";
+import { confirmationEmail, sendEmail } from "../utils/sendEmail.js";
 
 export const createSession = asyncHandler(async (req, res) => {
     const {eventName, desc, topic, eventDate, startTime, endTime} = req.body;
@@ -77,8 +77,6 @@ export const bookSession = asyncHandler(async (req, res) => {
         new: true
     })
 
-    console.log(session.startTime, session.endTime)
-
     const [mentor, joinee, url] = await Promise.all([
         User.findById(session.createdBy).select("email"), 
         User.findById(session.joinee).select("email"), 
@@ -86,7 +84,7 @@ export const bookSession = asyncHandler(async (req, res) => {
 
     await Promise.all([
         Session.findByIdAndUpdate(sessionId, {url}),
-        sendEmail({to: [mentor.email, joinee.email], subject: "Meeting Link", message: `<p>Join the meeting using ${url}</p>`})
+        sendEmail({to: [mentor.email, joinee.email], subject: "Meeting Link", message: confirmationEmail({eventDate:session.eventDate, startTime: session.startTime, guests: [mentor.email, joinee.email], link:url})})
     ])
 
     return res
@@ -152,7 +150,7 @@ export const getSessions = asyncHandler (async (req, res) => {
             query = {
                 ...query,
                 status: {$in: ["AVAILABLE", "BOOKED"]},
-                eventDate : {$gt: date},
+                eventDate : {$gte: date},
                 startTime: {$gt: date},
                 createdBy: {$ne: req.userId}
             };

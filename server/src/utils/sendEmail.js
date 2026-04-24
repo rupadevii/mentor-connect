@@ -33,6 +33,43 @@ export const sendEmail = async ({ to, subject, message }) => {
     }
 };
 
+function formatDate(eventDate){
+    const date = new Date(eventDate).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+
+    return date
+}
+
+function formatTime(eventTime){
+    const time = new Date(eventTime).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    return time
+}
+
+export const confirmationEmail = ({eventDate, startTime, guests, link}) => {
+    return `
+    <p>Hello,
+        You have a one on one session booked on the Mentor Connect platform for ${formatDate(eventDate)} ${formatTime(startTime)}. Please login at the session time to join</p>
+        Steps to join a session through Mentor connect:
+        <ol>
+            <li>Log in to your mentor connect account.</li>
+            <li>Go to the "Sessions" page.</li>
+            <li>Find the scheduled session at the top bar of the page.</li>
+            <li>to join the session click the "Join Now" button directly.</li>
+        </ol>
+    <h3>Meeting link: </h3>${link}
+    <h4>Guests</h4>
+    <p>${guests[0]}</p>
+    <p>${guests[1]}</p>
+
+    <p>Thank You</p>
+    ` 
+}
 // Generate reset password email HTML
 export const getResetPasswordEmail = (resetLink) => {
   return `
