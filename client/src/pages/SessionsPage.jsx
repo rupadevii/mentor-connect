@@ -177,7 +177,7 @@ export default function SessionsPage() {
                 
                                                 {(selectedStatus==="My Bookings" || selectedStatus==="My Sessions") && (
                                                     <div className='flex gap-3'>
-                                                        <Link to={session.url}><Button disabled={session.status === "COMPLETED"} className='text-xs px-3 py-2'>Join</Button></Link>
+                                                        <Link to={session.url}><Button disabled={session.status === "COMPLETED"||session.joinee===null} className='text-xs px-3 py-2'>Join</Button></Link>
                                                         {(selectedStatus === "My Bookings" && session.status !== "COMPLETED") && (
                                                             <Button variant='secondary' onClick={() => openModalCancel(session._id)} className='text-xs px-3 py-2'>Cancel</Button>
                                                         )}
