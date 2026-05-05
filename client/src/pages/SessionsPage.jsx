@@ -6,6 +6,7 @@ import { formatDate, formatTime } from '../utils/helpers'
 import Modal from '../components/ui/Modal'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Loader from '../components/ui/Loader';
 
 const status = ["Upcoming", "Cancelled", "Past", "My Bookings", "My Sessions"]
 
@@ -124,81 +125,92 @@ export default function SessionsPage() {
                 <div className='flex justify-between items-center'>
                     <div className='flex gap-3 mb-3'>
                         {status.map((item, index) => (
-                            <div key={index} className={`${selectedStatus===item ? "active": ""} cursor-pointer p-2`} onClick={() => setSelectedStatus(item)}>{item}</div>
+                            <div 
+                                key={index}  
+                                onClick={() => setSelectedStatus(item)}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer ${selectedStatus===item ? "bg-black text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+                                >{item}</div>
                         ))}
                     </div>
-
-                    <select onChange={handleChange} className='border border-black p-2 rounded-xl'>
-                        <option>All</option>
-                        {topics.map((topic, index) => (
-                            <option value={topic._id} key={index}>{topic.name}</option>
-                        ))}
-                    </select>
+                    
+                    <div>
+                        <label className="mx-2 text-sm">Filter by Topic:</label>
+                        <select onChange={handleChange} className='border border-gray-300 bg-white px-4 py-2 rounded-lg text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-black'>
+                            <option>All</option>
+                            {topics.map((topic, index) => (
+                                <option value={topic._id} key={index}>{topic.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    {sessions.length===0 ? (
-                        <div className='text-center py-7'>No sessions found.</div>
-                    ) : (
-                        <div className='flex justify-center flex-col'>
-                            <div className='flex flex-wrap justify-center'>
-                                {sessions.map(session => (
-                                    <div className="w-[500px] m-4 rounded-xl shadow-lg bg-white p-5 border border-gray-400 cursor-pointer transition-transform duration-200 hover:scale-[1.02]" key={session._id}>
-                                        <div className='flex justify-between items-start'>
-                                            <div className='border-slate-800 border-b-1'>
-                                                <h3 className='mt-1 text-sm font-semibold text-gray-900'>
-                                                {session.createdBy.name}
-                                                </h3>
-                                                <p className='text-sm mt-0.5 text-gray-600'>{session.createdBy.email}</p>
-                                            </div> 
-                                            <div className='text-right'>
-                                                <p className='text-sm font-medium text-gray-800'>{formatDate(session.eventDate)}</p>
-                                                <p className='text-xs text-gray-500'>{formatTime(session.startTime)} - {formatTime(session.endTime)}</p>
-                                            </div>
-                                        </div>
-                                        <div className='my-4'>
-                                            <h2 className='text-base font-semibold'>{session.eventName}</h2>
-                                            <p className='text-sm mt-1 font-extralight text-gray-600 line-clamp-2'>{session.desc}</p>
-                                        </div>
-                                        
-                                        <div className='flex justify-between items-center'>
-                                            <div className='flex items-center'>
-                                                <div className='text-xs border border-green-900 rounded-2xl px-2 py-1 text-green-800'>
-                                                    {session.topic.name}
+                {loading? (
+                    <div className="p-20"><Loader/></div>
+                ) : (
+                    <div>
+                        {sessions.length===0 ? (
+                            <div className='text-center py-10'>No sessions found.</div>
+                        ) : (
+                            <div className='flex justify-center flex-col'>
+                                <div className='flex flex-wrap justify-center'>
+                                    {sessions.map(session => (
+                                        <div className="w-[500px] m-4 rounded-xl shadow-lg bg-white p-5 border border-gray-400 cursor-pointer transition-transform duration-200 hover:scale-[1.02]" key={session._id}>
+                                            <div className='flex justify-between items-start'>
+                                                <div className='border-slate-800 border-b-1'>
+                                                    <h3 className='mt-1 text-sm font-semibold text-gray-900'>
+                                                    {session.createdBy.name}
+                                                    </h3>
+                                                    <p className='text-sm mt-0.5 text-gray-600'>{session.createdBy.email}</p>
+                                                </div> 
+                                                <div className='text-right'>
+                                                    <p className='text-sm font-medium text-gray-800'>{formatDate(session.eventDate)}</p>
+                                                    <p className='text-xs text-gray-500'>{formatTime(session.startTime)} - {formatTime(session.endTime)}</p>
                                                 </div>
                                             </div>
-                                            <div>
-                                                {(selectedStatus==="Upcoming") && (
-                                                    session.status==="BOOKED" ? (
-                                                        <Button variant='secondary' className='text-xs px-3 py-2'>Booked</Button>
-                                                    ) : (
-                                                        <Button onClick={() => openModalBook(session._id)} className='text-xs px-3 py-2'>Book</Button>
-                                                    )
-                                                )}
-                
-                                                {(selectedStatus==="My Bookings" || selectedStatus==="My Sessions") && (
-                                                    <div className='flex gap-3'>
-                                                        <Link to={session.url}><Button disabled={session.status === "COMPLETED"||session.joinee===null} className='text-xs px-3 py-2'>Join</Button></Link>
-                                                        {(selectedStatus === "My Bookings" && session.status !== "COMPLETED") && (
-                                                            <Button variant='secondary' onClick={() => openModalCancel(session._id)} className='text-xs px-3 py-2'>Cancel</Button>
-                                                        )}
-                                                        {(selectedStatus === "My Sessions" && session.status === "COMPLETED" && (
-                                                            <Button variant='secondary' className='text-xs px-3 py-2'>Give Feedback</Button>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                            <div className='my-4'>
+                                                <h2 className='text-base font-semibold'>{session.eventName}</h2>
+                                                <p className='text-sm mt-1 font-extralight text-gray-600 line-clamp-2'>{session.desc}</p>
                                             </div>
                                             
+                                            <div className='flex justify-between items-center'>
+                                                <div className='flex items-center'>
+                                                    <div className='text-xs border border-green-900 rounded-2xl px-2 py-1 text-green-800'>
+                                                        {session.topic.name}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    {(selectedStatus==="Upcoming") && (
+                                                        session.status==="BOOKED" ? (
+                                                            <Button variant='secondary' className='text-xs px-3 py-2'>Booked</Button>
+                                                        ) : (
+                                                            <Button onClick={() => openModalBook(session._id)} className='text-xs px-3 py-2'>Book</Button>
+                                                        )
+                                                    )}
+                    
+                                                    {(selectedStatus==="My Bookings" || selectedStatus==="My Sessions") && (
+                                                        <div className='flex gap-3'>
+                                                            <Link to={session.url}><Button disabled={session.status === "COMPLETED"||session.joinee===null} className='text-xs px-3 py-2'>Join</Button></Link>
+                                                            {(selectedStatus === "My Bookings" && session.status !== "COMPLETED") && (
+                                                                <Button variant='secondary' onClick={() => openModalCancel(session._id)} className='text-xs px-3 py-2'>Cancel</Button>
+                                                            )}
+                                                            {(selectedStatus === "My Sessions" && session.status === "COMPLETED" && (
+                                                                <Button variant='secondary' className='text-xs px-3 py-2'>Give Feedback</Button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
+                                <div className='flex gap-3 justify-center my-5'>
+                                    <button onClick={() => setPage(prev => prev-1)} disabled={!prevPage} className='border rounded-md border-black px-1 py-1 disabled:border-stone-200 disabled:cursor-not-allowed'><ChevronLeft /></button>
+                                    <button onClick={() => setPage(prev => prev+1)} disabled={!nextPage} className='border rounded-md border-black px-1 py-1 disabled:border-stone-200 disabled:cursor-not-allowed'><ChevronRight /></button>
+                                </div>
                             </div>
-                            <div className='flex gap-3 justify-center my-5'>
-                                <button onClick={() => setPage(prev => prev-1)} disabled={!prevPage} className='border rounded-md border-black px-1 py-1 disabled:border-stone-200'><ChevronLeft /></button>
-                                <button onClick={() => setPage(prev => prev+1)} disabled={!nextPage} className='border rounded-md border-black px-1 py-1 disabled:border-stone-200'><ChevronRight /></button>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
                 {action==="book" && (
                     <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Book Session">
                         <p>Are you sure you want to book session?</p>
@@ -216,5 +228,7 @@ export default function SessionsPage() {
 
             </div>
         </Layout>
+        
     )
+    
 }

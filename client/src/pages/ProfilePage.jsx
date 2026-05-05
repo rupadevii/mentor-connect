@@ -3,6 +3,7 @@ import api from '../services/api';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 import Alert from '../components/ui/Alert';
+import Loader from '../components/ui/Loader'
 import { fileToBase64, getInitials } from '../utils/helpers';
 
 const ProfilePage = () => {
@@ -126,104 +127,105 @@ const ProfilePage = () => {
     return (
         <Layout>
             <div className="max-w-2xl mx-auto">
-                <div className="rounded-lg bg-white shadow p-8">
-                <h1 className="text-3xl font-bold text-slate-900 mb-2">Profile</h1>
-                <p className="text-slate-600 mb-6">View and update your profile information</p>
+                <div className="rounded-lg bg-white shadow p-10 border">
+                    <h1 className="text-2xl font-bold text-slate-900 mb-2 text-center">Profile</h1>
+                    <p className="text-slate-600 mb-6 text-center">View and update your profile information</p>
 
-                {error && <Alert type="error" message={error} />}
-                {success && <Alert type="success" message={success} />}
+                    {error && <Alert type="error" message={error} />}
+                    {success && <Alert type="success" message={success} />}
 
-                {isFetching ? (
-                    <p className="text-slate-600">Loading profile...</p>
-                ) : (
-                    <form className="space-y-4 p-4" onSubmit={handleSubmit}>
-                        <div className="flex items-center gap-4 pb-2">
-                        <div className="w-20 h-20 rounded-full overflow-hidden bg-indigo-600 text-white flex items-center justify-center text-xl font-bold border border-slate-200">
-                            {previewUrl ? (
-                            <img src={previewUrl} alt="Profile preview" className="w-full h-full object-cover" />
-                            ) : (
-                            getInitials(formData.name || user?.name || 'User')
-                            )}
-                        </div>
+                    {isFetching ? (
+                        <div><Loader/></div>
+                    ) : (
+                        <form className="space-y-4 p-4" onSubmit={handleSubmit}>
+                            <div className="flex items-center gap-4 pb-2 justify-center flex-col">
+                                <div className="w-20 h-20 rounded-full overflow-hidden bg-indigo-600 text-white flex items-center justify-center text-xl font-bold border border-slate-200">
+                                    {previewUrl ? (
+                                    <img src={previewUrl} alt="Profile preview" className="w-full h-full object-cover" />
+                                    ) : (
+                                    getInitials(formData.name || user?.name || 'User')
+                                    )}
+                                </div>
 
-                        {isEditing && (
-                            <div>
-                            <label className="inline-flex cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                                Upload photo
-                                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                            </label>
-                            <p className="text-xs text-slate-500 mt-2">Max size: 5MB</p>
+                                {isEditing && (
+                                    <div className="text-center">
+                                        <label className="inline-flex cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                                            Upload photo
+                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                        </label>
+                                        <p className="text-xs text-slate-500 mt-2">Max size: 5MB</p>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        </div>
 
-                        <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Enter your name"
-                            disabled={!isEditing}
-                            className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
-                            required
-                        />
-                        </div>
+                            <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="Enter your name"
+                                disabled={!isEditing}
+                                className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
+                                required
+                            />
+                            </div>
 
-                        <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="Enter your email"
-                            disabled={!isEditing}
-                            className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
-                            required
-                        />
-                        </div>
+                            <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="Enter your email"
+                                disabled={!isEditing}
+                                className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
+                                required
+                            />
+                            </div>
 
-                        <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Level</label>
-                        <select
-                            name="level"
-                            value={formData.level}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                            className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
-                        >
-                            {[1, 2, 3, 4, 5, 6].map((level) => (
-                            <option key={level} value={level}>
-                                Level {level}
-                            </option>
-                            ))}
-                        </select>
-                        </div>
+                            <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Level</label>
+                            <select
+                                name="level"
+                                value={formData.level}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                                className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
+                            >
+                                {[1, 2, 3, 4, 5, 6].map((level) => (
+                                <option key={level} value={level}>
+                                    Level {level}
+                                </option>
+                                ))}
+                            </select>
+                            </div>
 
-                        <div className="flex gap-4 pt-4">
-                        {!isEditing ? (
-                            <button className='text-white shadow-md shadow-indigo-600/20 hover:from-indigo-700 hover:to-indigo-900 focus:ring-indigo-500 bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#172554] inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed' onClick={handleEdit}>Edit Profile</button>
-                            // <Button variant="primary" type="button" onClick={handleEdit}>
-                            //   Edit Profile
-                            // </Button>
-                        ) : (
-                            <>
-                            <Button variant="primary" type="submit" disabled={isLoading}>
-                                {isLoading ? 'Saving...' : 'Save Changes'}
-                            </Button>
-                            <Button variant="secondary" type="button" onClick={handleCancel} disabled={isLoading}>
-                                Cancel
-                            </Button>
-                            </>
-                        )}
-                        </div>
-                    </form>
-                )}
+                            <div className="flex gap-4 pt-4">
+                            {!isEditing ? (
+                                <button className='text-white shadow-md shadow-indigo-600/20 hover:from-indigo-700 hover:to-indigo-900 focus:ring-indigo-500 bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#172554] inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed' onClick={handleEdit}>Edit Profile</button>
+                                // <Button variant="primary" type="button" onClick={handleEdit}>
+                                //   Edit Profile
+                                // </Button>
+                            ) : (
+                                <>
+                                <Button variant="primary" type="submit" disabled={isLoading}>
+                                    {isLoading ? 'Saving...' : 'Save Changes'}
+                                </Button>
+                                <Button variant="secondary" type="button" onClick={handleCancel} disabled={isLoading}>
+                                    Cancel
+                                </Button>
+                                </>
+                            )}
+                            </div>
+                        </form>
+                    )}
             </div>
         </div>
     </Layout>
+    
   );
 };
 

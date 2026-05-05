@@ -44,7 +44,7 @@ const LoginPage = () => {
       <div className="auth-card">
         <div className="text-center mb-8">
           <h1 className="auth-heading">Welcome back</h1>
-          <p className="auth-subtext">Sign in to continue to Accio Mentor Connect</p>
+          <p className="auth-subtext">Sign in to continue to Mentor Connect</p>
         </div>
 
         {error && <Alert type="error" message={error} />}
