@@ -41,9 +41,9 @@ export default function CreateSessionPage() {
         const loadTopics = async () => {
             try{
                 const response = await api.get('/topics')
-                const {data} = await response.data;
+                const {data} = response.data;
                 setTopics(data.filter(item => item.level <= user.level))
-            }catch(err){
+            }catch(error){
                 console.error(error)
             }
         }
@@ -56,10 +56,8 @@ export default function CreateSessionPage() {
         setLoading(true);
         setError('');
 
-        const start = Number(formData.startTime.split(":")[0])
-        const endTime = String(start === 12 ? 1 : start+1).padStart(2, '0')
         const startDateTime = new Date(formData.eventDate + "T" + formData.startTime + ":00")
-        const endDateTime = new Date(formData.eventDate + "T" + endTime + ":" + formData.startTime.split(":")[1] + ":00")
+        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000)
 
         try {
             const response = await api.post('/sessions/', {...formData, startTime: startDateTime, endTime: endDateTime});
@@ -152,16 +150,17 @@ export default function CreateSessionPage() {
                         </div>
 
                         <div className='w-full'>
-                        <label className="block text-xs font-medium text-slate-700 mb-2">TOPIC:</label>
+                            <label className="block text-xs font-medium text-slate-700 mb-2">TOPIC:</label>
                             <select
                                 name="topic"
-                                // value={formData.topic}
+                                required
+                                value={formData.topic}
                                 onChange={handleChange}
                                 className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
                             >
-                                <option>Select</option>
+                                <option value=''>Select</option>
                                 {topics?.map((item) => (
-                                <option key={item.level} value={item._id}>
+                                <option key={item._id} value={item._id}>
                                     {item.name}
                                 </option>
                                 ))}

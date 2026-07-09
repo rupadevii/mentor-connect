@@ -87,9 +87,7 @@ export const bookSession = asyncHandler(async (req, res) => {
         sendEmail({to: [mentor.email, joinee.email], subject: "Meeting Link", message: confirmationEmail({eventDate:session.eventDate, startTime: session.startTime, guests: [mentor.email, joinee.email], link:url})})
     ])
 
-    return res
-            .status(200)
-            .json({msg: "Session Booked Successfully!", data: session})
+    res.status(200).json({msg: "Session Booked Successfully!", data: session})
 })
 
 export const cancelSession = asyncHandler(async (req, res) => {
@@ -115,9 +113,7 @@ export const cancelSession = asyncHandler(async (req, res) => {
         }
     )
 
-    return res
-        .status(201)
-        .json({ message: "Session cancelled succesfully!", data: session });
+    res.status(201).json({ message: "Session cancelled succesfully!", data: session });
 })
 
 export const getSessions = asyncHandler (async (req, res) => {
@@ -208,6 +204,18 @@ export const getSessions = asyncHandler (async (req, res) => {
             }
         }
     })
+})
+
+export const getSessionById = asyncHandler(async (req, res) => {
+    const {id} = req.params
+
+    const session = await Session.findById(id).populate("createdBy", "name email").populate("joinee", "name email level").populate("topic", "name")
+
+    if(!session){
+        return res.status(404).json({msg: "Session not found."})
+    }
+
+    res.status(200).json({msg: "Session details", data:session})
 })
 
 export const getDashboardStats = asyncHandler(async (req, res) => {
@@ -362,7 +370,71 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
 
     ])
 
-    return res.status(200).json({
+    res.status(200).json({
         data: responses,
     });
+})
+
+export const submitMentorFeedback = asyncHandler(async (req, res) => {
+    const {id} = req.params
+
+    const session = await Session.findById(id)
+
+    if(!session){
+        return res.status(404).json({msg: "Session not found."})
+    }
+
+    if(session.createdBy.toString() !== req.userId){
+        return res.status(403).json({msg: "Not authorized to submit feedback"})
+    }
+
+    if(session.mentorFeedback.submittedAt){
+        return res.status(400).json({msg: "Feedback has already been submitted."})
+    }
+
+    if (session.status !== 'COMPLETED') {
+        return res.status(400).json({ msg: 'Feedback cannot be submitted before completion of the session.' })
+    }
+
+    const {comment, level} = req.body
+
+    if(!comment){
+        return res.status(400).json({msg: "Incomplete information"})
+    }
+
+    const responses = await Promise.all([User.findByIdAndUpdate(session.joinee, {level}), Session.findByIdAndUpdate(id, {mentorFeedback: {comment, submittedAt: Date.now()}})])
+
+    res.status(200).json({msg: "Feedback submitted successfully"})
+})
+
+export const submitMenteeFeedback = asyncHandler(async (req, res) => {
+    const {id} = req.params
+
+    const session = await Session.findById(id)
+
+    if(!session){
+        return res.status(404).json({msg: "Session not found."})
+    }
+
+    if(session.joinee.toString() !== req.userId){
+        return res.status(403).json({msg: "Not authorized to submit feedback"})
+    }
+
+    if(session.menteeFeedback.submittedAt){
+        return res.status(400).json({msg: "Feedback has already been submitted."})
+    }
+
+    if (session.status !== 'COMPLETED') {
+        return res.status(400).json({ msg: 'Feedback cannot be submitted before completion of the session.' })
+    }
+
+    const {rating, comment} = req.body
+
+    if(!rating || !comment){
+        return res.status(400).json({msg: "Incomplete information"})
+    }
+
+    await Session.findByIdAndUpdate(id, {menteeFeedback: {rating, comment, submittedAt: Date.now()}})
+
+    res.status(200).json({msg: "Feedback submitted successfully."})
 })

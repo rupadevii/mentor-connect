@@ -46,6 +46,25 @@ const sessionSchema = new mongoose.Schema(
         url: {
             type: String,
             default: null
+        },
+        mentorFeedback: {
+            comment: {
+                type: String,
+            },
+            submittedAt: {
+                type: Date,
+            }
+        }, 
+        menteeFeedback: {
+            rating: {
+                type: Number
+            },
+            comment: {
+                type: String
+            },
+            submittedAt: {
+                type: Date
+            }
         }
     },
     {

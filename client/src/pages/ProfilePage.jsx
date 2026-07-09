@@ -186,23 +186,6 @@ const ProfilePage = () => {
                             />
                             </div>
 
-                            <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Level</label>
-                            <select
-                                name="level"
-                                value={formData.level}
-                                onChange={handleChange}
-                                disabled={!isEditing}
-                                className="w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 bg-white transition-colors duration-200 border-slate-300 focus:ring-indigo-200 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-500"
-                            >
-                                {[1, 2, 3, 4, 5, 6].map((level) => (
-                                <option key={level} value={level}>
-                                    Level {level}
-                                </option>
-                                ))}
-                            </select>
-                            </div>
-
                             <div className="flex gap-4 pt-4">
                             {!isEditing ? (
                                 <button className='text-white shadow-md shadow-indigo-600/20 hover:from-indigo-700 hover:to-indigo-900 focus:ring-indigo-500 bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#172554] inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed' onClick={handleEdit}>Edit Profile</button>

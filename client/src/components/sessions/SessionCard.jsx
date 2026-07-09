@@ -1,0 +1,65 @@
+import { formatDate, formatTime } from '../../utils/helpers';
+import Button from '../ui/Button';
+import { Link } from 'react-router-dom';
+
+export default function SessionCard({selectedStatus, session, openModalBook, openModalCancel}) {
+    return (
+        <div className="w-[500px] m-4 rounded-xl shadow-lg bg-white p-5 border border-gray-400 cursor-pointer transition-transform duration-200 hover:scale-[1.02]">
+            <div className='flex justify-between items-start'>
+                <div className='border-slate-800 border-b-1'>
+                    <h3 className='mt-1 text-sm font-semibold text-gray-900'>
+                        {session.createdBy.name}
+                    </h3>
+                    <p className='text-sm mt-0.5 text-gray-600'>{session.createdBy.email}</p>
+                </div> 
+                <div className='text-right'>
+                    <p className='text-sm font-medium text-gray-800'>{formatDate(session.eventDate)}</p>
+                    <p className='text-xs text-gray-500'>{formatTime(session.startTime)} - {formatTime(session.endTime)}</p>
+                </div>
+            </div>
+            <div className='my-4'>
+                <h2 className='text-base font-semibold'>{session.eventName}</h2>
+                <p className='text-sm mt-1 font-extralight text-gray-600 line-clamp-2'>{session.desc}</p>
+            </div>
+                                            
+            <div className='flex justify-between items-center'>
+                <div className='flex items-center'>
+                    <div className='text-xs border border-green-900 rounded-2xl px-2 py-1 text-green-800'>
+                        {session.topic.name}
+                    </div>
+                </div>
+                <div>
+                    {(selectedStatus==="Upcoming") && (
+                        session.status==="BOOKED" ? (
+                            <Button variant='secondary' className='text-xs px-3 py-2'>Booked</Button>
+                        ) : (
+                            <Button onClick={() => openModalBook(session._id)} className='text-xs px-3 py-2'>Book</Button>
+                        )
+                    )}
+
+                    {(selectedStatus==="My Bookings" || selectedStatus==="My Sessions") && (
+                        <div className='flex gap-3'>
+                            <Link to={session.url}>
+                                <Button disabled={session.status === "COMPLETED"||session.joinee===null} className='text-xs px-3 py-2'>Join</Button>
+                            </Link>
+                            {(selectedStatus === "My Bookings" && session.status !== "COMPLETED") && (
+                                <Button variant='secondary' onClick={() => openModalCancel(session._id)} className='text-xs px-3 py-2'>Cancel</Button>
+                            )}
+                            {(selectedStatus === "My Sessions" && session.status === "COMPLETED" && (
+                                <Link to={`/feedback/mentor/${session._id}`}>
+                                    <Button variant='secondary' className='text-xs px-3 py-2' disabled={session.mentorFeedback}>Give Feedback</Button>
+                                </Link>
+                            ))}
+                            {(selectedStatus === "My Bookings" && session.status === "COMPLETED" && (
+                                <Link to={`/feedback/mentee/${session._id}`}>
+                                    <Button variant='secondary' className='text-xs px-3 py-2' disabled={session.menteeFeedback}>Give Feedback</Button>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                
+            </div>
+        </div>
+    )
+}

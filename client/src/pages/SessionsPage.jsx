@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react'
 import Layout from '../components/layout/Layout'
 import api from '../services/api'
 import Button from '../components/ui/Button'
-import { formatDate, formatTime } from '../utils/helpers'
 import Modal from '../components/ui/Modal'
-import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Loader from '../components/ui/Loader';
+import SessionCard from '../components/sessions/SessionCard';
 
 const status = ["Upcoming", "Cancelled", "Past", "My Bookings", "My Sessions"]
 
@@ -54,9 +53,7 @@ export default function SessionsPage() {
         const loadTopics = async () => {
             try{
                 const response = await api.get('/topics')
-                const {data} = await response.data;
-                console.log(data)
-                setTopics(data)
+                setTopics(response.data.data)
             }catch(err){
                 console.error(err)
             }
@@ -67,12 +64,18 @@ export default function SessionsPage() {
     }, [])
     
     function handleChange(e){
+        setPage(1)
         if(e.target.value==="All"){
             setFilter(null)
         }
         else{
             setFilter(e.target.value)
         }
+    }
+
+    function selectStatus(item){
+        setSelectedStatus(item)
+        setPage(1)
     }
 
     function openModalBook(id){
@@ -127,7 +130,7 @@ export default function SessionsPage() {
                         {status.map((item, index) => (
                             <div 
                                 key={index}  
-                                onClick={() => setSelectedStatus(item)}
+                                onClick={() => selectStatus(item)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer ${selectedStatus===item ? "bg-black text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                                 >{item}</div>
                         ))}
@@ -153,54 +156,12 @@ export default function SessionsPage() {
                             <div className='flex justify-center flex-col'>
                                 <div className='flex flex-wrap justify-center'>
                                     {sessions.map(session => (
-                                        <div className="w-[500px] m-4 rounded-xl shadow-lg bg-white p-5 border border-gray-400 cursor-pointer transition-transform duration-200 hover:scale-[1.02]" key={session._id}>
-                                            <div className='flex justify-between items-start'>
-                                                <div className='border-slate-800 border-b-1'>
-                                                    <h3 className='mt-1 text-sm font-semibold text-gray-900'>
-                                                    {session.createdBy.name}
-                                                    </h3>
-                                                    <p className='text-sm mt-0.5 text-gray-600'>{session.createdBy.email}</p>
-                                                </div> 
-                                                <div className='text-right'>
-                                                    <p className='text-sm font-medium text-gray-800'>{formatDate(session.eventDate)}</p>
-                                                    <p className='text-xs text-gray-500'>{formatTime(session.startTime)} - {formatTime(session.endTime)}</p>
-                                                </div>
-                                            </div>
-                                            <div className='my-4'>
-                                                <h2 className='text-base font-semibold'>{session.eventName}</h2>
-                                                <p className='text-sm mt-1 font-extralight text-gray-600 line-clamp-2'>{session.desc}</p>
-                                            </div>
-                                            
-                                            <div className='flex justify-between items-center'>
-                                                <div className='flex items-center'>
-                                                    <div className='text-xs border border-green-900 rounded-2xl px-2 py-1 text-green-800'>
-                                                        {session.topic.name}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    {(selectedStatus==="Upcoming") && (
-                                                        session.status==="BOOKED" ? (
-                                                            <Button variant='secondary' className='text-xs px-3 py-2'>Booked</Button>
-                                                        ) : (
-                                                            <Button onClick={() => openModalBook(session._id)} className='text-xs px-3 py-2'>Book</Button>
-                                                        )
-                                                    )}
-                    
-                                                    {(selectedStatus==="My Bookings" || selectedStatus==="My Sessions") && (
-                                                        <div className='flex gap-3'>
-                                                            <Link to={session.url}><Button disabled={session.status === "COMPLETED"||session.joinee===null} className='text-xs px-3 py-2'>Join</Button></Link>
-                                                            {(selectedStatus === "My Bookings" && session.status !== "COMPLETED") && (
-                                                                <Button variant='secondary' onClick={() => openModalCancel(session._id)} className='text-xs px-3 py-2'>Cancel</Button>
-                                                            )}
-                                                            {(selectedStatus === "My Sessions" && session.status === "COMPLETED" && (
-                                                                <Button variant='secondary' className='text-xs px-3 py-2'>Give Feedback</Button>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                
-                                            </div>
-                                        </div>
+                                        <SessionCard 
+                                            key={session._id}
+                                            session={session} 
+                                            selectedStatus={selectedStatus} 
+                                            openModalBook={openModalBook} 
+                                            openModalCancel={openModalCancel}/>
                                     ))}
                                 </div>
                                 <div className='flex gap-3 justify-center my-5'>

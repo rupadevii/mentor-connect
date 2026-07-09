@@ -11,57 +11,75 @@ import CreateSessionPage from './pages/CreateSessionPage';
 // Components
 import ProtectedRoute from './routes/ProtectedRoute';
 import SessionsPage from './pages/SessionsPage';
+import MentorFeedbackPage from './pages/MentorFeedbackPage';
+import MenteeFeedbackPage from './pages/MenteeFeedbackPage';
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* Auth Routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+    return (
+        <Router>
+            <Routes>
+                {/* Auth Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
+                {/* Protected Routes */}
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                        <DashboardPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                        <ProfilePage />
+                        </ProtectedRoute>
+                    }
+                />
 
-        <Route
-            path="/create"
-            element={
-                <ProtectedRoute>
-                    <CreateSessionPage/>
-                </ProtectedRoute>
-            }
-        />
+                <Route
+                    path="/create"
+                    element={
+                        <ProtectedRoute>
+                            <CreateSessionPage/>
+                        </ProtectedRoute>
+                    }
+                />
 
-        <Route
-            path="/sessions"
-            element={
-                <ProtectedRoute>
-                    <SessionsPage/>
-                </ProtectedRoute>
-            }
-        />
-        
-        {/* Redirect */}
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Router>
-  );
+                <Route
+                    path="/sessions"
+                    element={
+                        <ProtectedRoute>
+                            <SessionsPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route 
+                    path="/feedback/mentor/:id" 
+                    element={
+                        <ProtectedRoute>
+                            <MentorFeedbackPage/>
+                        </ProtectedRoute>
+                    }/>
+
+                <Route 
+                    path="/feedback/mentee/:id" 
+                    element={
+                        <ProtectedRoute>
+                            <MenteeFeedbackPage/>
+                        </ProtectedRoute>
+                    }/>
+                
+                {/* Redirect */}
+                <Route path="/" element={<Navigate to="/login" />} />
+                <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
