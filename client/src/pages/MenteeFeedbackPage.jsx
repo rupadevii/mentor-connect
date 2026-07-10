@@ -28,7 +28,7 @@ export default function MenteeFeedbackPage() {
             setSuccess('Feedback submitted successfully')
             setComment('')
             setTimeout(() => {
-                navigate("/sessions")
+                navigate(-1)
             }, 1000)
         } catch (error) {
             console.log(error)
@@ -41,6 +41,9 @@ export default function MenteeFeedbackPage() {
 
     return (
         <Layout>
+            <Button variant="secondary" onClick={() => navigate(-1)} className="mb-4 text-xs px-3 py-2">
+                ← Back
+            </Button>
             {success && (<Alert type="success" message={success}/>)}
             {error && (<Alert type="error" message={error ||"Something went wrong"}/>)}
             <div className='max-w-3xl mx-auto bg-white'>
@@ -61,7 +64,7 @@ export default function MenteeFeedbackPage() {
                     <div className='mt-4'>
                         <label htmlFor='feedback'>Comment:</label>
                         <br/>
-                        <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows='8' cols='80' className='border p-3' required></textarea>
+                        <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows='8' cols='73' className='border p-3' required></textarea>
                     </div>
 
                     <Button variant="primary" type="button" disabled={submitting} onClick={handleSubmit}>

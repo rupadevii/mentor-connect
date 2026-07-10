@@ -17,9 +17,9 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse, user }) => {
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '📊' },
-    { name: 'Profile', path: '/profile', icon: '👤' },
     { name: 'Create', path: '/create', icon: '➕'},
-    { name: 'Sessions', path: '/sessions', icon: '👥'}
+    { name: 'Sessions', path: '/sessions', icon: '👥'},
+    { name: 'Profile', path: '/profile', icon: '👤' }
   ];
 
   return (

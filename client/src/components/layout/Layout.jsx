@@ -13,10 +13,10 @@ const Layout = ({ children }) => {
 
     const loadCurrentUser = async () => {
         try {
-        const response = await api.get('/auth/me');
-        setCurrentUser(response?.data?.user || null);
+            const response = await api.get('/auth/me');
+            setCurrentUser(response?.data?.user || null);
         } catch (error) {
-        setCurrentUser(null);
+            setCurrentUser(null);
         }
     };
 

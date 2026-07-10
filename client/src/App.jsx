@@ -13,6 +13,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import SessionsPage from './pages/SessionsPage';
 import MentorFeedbackPage from './pages/MentorFeedbackPage';
 import MenteeFeedbackPage from './pages/MenteeFeedbackPage';
+import SessionDetailsPage from './pages/SessionDetailsPage';
 
 function App() {
     return (
@@ -54,6 +55,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <SessionsPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/sessions/:id"
+                    element={
+                        <ProtectedRoute>
+                            <SessionDetailsPage/>
                         </ProtectedRoute>
                     }
                 />

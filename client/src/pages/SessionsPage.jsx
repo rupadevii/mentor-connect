@@ -6,6 +6,7 @@ import Modal from '../components/ui/Modal'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Loader from '../components/ui/Loader';
 import SessionCard from '../components/sessions/SessionCard';
+import { Link } from 'react-router-dom';
 
 const status = ["Upcoming", "Cancelled", "Past", "My Bookings", "My Sessions"]
 
@@ -156,12 +157,13 @@ export default function SessionsPage() {
                             <div className='flex justify-center flex-col'>
                                 <div className='flex flex-wrap justify-center'>
                                     {sessions.map(session => (
-                                        <SessionCard 
-                                            key={session._id}
-                                            session={session} 
-                                            selectedStatus={selectedStatus} 
-                                            openModalBook={openModalBook} 
-                                            openModalCancel={openModalCancel}/>
+                                        // <Link to={`/sessions/${session._id}`}  key={session._id}>
+                                            <SessionCard 
+                                                session={session} 
+                                                selectedStatus={selectedStatus} 
+                                                openModalBook={openModalBook} 
+                                                openModalCancel={openModalCancel}/>
+                                        // </Link>
                                     ))}
                                 </div>
                                 <div className='flex gap-3 justify-center my-5'>

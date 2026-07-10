@@ -90,28 +90,30 @@ const DashboardPage = () => {
                                 </h2>
                                 <div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
                                     {dashboard[2].map(session => (
-                                        <div key={session._id}
-                                        className='border border-slate-200 rounded-lg p-4 bg-white cursor-pointer transition-transform duration-200 hover:scale-[1.02]'>
-                                            <p className="text-sm font-medium text-slate-800">
-                                                {formatDate(session.eventDate)}
-                                            </p>
-                                                <p className="text-xs text-slate-500 mb-2">
-                                                {formatTime(session.startTime)} – {formatTime(session.endTime)}
-                                            </p>
+                                        <Link to={`/sessions/${session._id}`} key={session._id}>
+                                            <div
+                                            className='border border-slate-200 rounded-lg p-4 bg-white cursor-pointer transition-transform duration-200 hover:scale-[1.02]'>
+                                                <p className="text-sm font-medium text-slate-800">
+                                                    {formatDate(session.eventDate)}
+                                                </p>
+                                                    <p className="text-xs text-slate-500 mb-2">
+                                                    {formatTime(session.startTime)} – {formatTime(session.endTime)}
+                                                </p>
 
-                                            <p className="text-sm font-semibold text-slate-900">
-                                                {session.eventName}
-                                            </p>
+                                                <p className="text-sm font-semibold text-slate-900">
+                                                    {session.eventName}
+                                                </p>
 
-                                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                                            {session.desc}
-                                            </p>
+                                                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                                                {session.desc}
+                                                </p>
 
-                                            <span className="inline-block mt-3 text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">
-                                                {session.topic.name}
-                                            </span>
+                                                <span className="inline-block mt-3 text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">
+                                                    {session.topic.name}
+                                                </span>
 
-                                        </div>
+                                            </div>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
