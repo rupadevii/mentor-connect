@@ -2,57 +2,31 @@ import cron from "node-cron";
 import Session from "../models/Session.js";
 
 export const sessionsStatusUpdater = () => {
-  cron.schedule("0 * * * *", async () => {
-    try {
-      console.log("running a task every hour");
+    cron.schedule("0 * * * *", async () => {
+        try {
+            console.log("running a task every hour");
 
-    //   const now = new Date();
-    //   const hrs = now.getHours().toString().padStart(2, "0");
-    //   const mins = now.getMinutes().toString().padStart(2, "0");
-    //   let currentTime = `${hrs}:${mins}`;
+            const currentDate = new Date();
+            console.log("currentDate", currentDate);
 
-    //   console.log("now", now);
-      const currentDate = new Date();
-      console.log("currentDate", currentDate);
-
-      const result = await Session.updateMany(
-        {
-          status: {
-            $nin: ["COMPLETED", "CANCELLED"],
-          },
-          $or: [
-            {
-              eventDate: {
-                $lt: currentDate,
-              },
-            },
-            {
-              $and: [
+            const result = await Session.updateMany(
                 {
-                  eventDate: {
-                    $lte: currentDate,
-                  },
+                    status: {
+                        $nin: ["COMPLETED", "CANCELLED"],
+                    },
+                    endTime: { $lt: currentDate },
                 },
                 {
-                  endTime: {
-                    $lt: currentDate,
-                  },
+                    status: "COMPLETED",
                 },
-              ],
-            },
-          ],
-        },
-        {
-          status: "COMPLETED",
-        },
-      );
+            );
 
-    //   sendMail(
-    //     `[CRON SUCCESS]: Total ${result.modifiedCount}s of session status got updated to COMPLETED`,
-    //   );
-      //usercase-2, send a reminder mail for the session before 30 mins
-    } catch (error) {
-      console.error("[CRON ERROR]:" + error.message);
-    }
+            //   sendMail(
+            //     `[CRON SUCCESS]: Total ${result.modifiedCount}s of session status got updated to COMPLETED`,
+            //   );
+            //usercase-2, send a reminder mail for the session before 30 mins
+        } catch (error) {
+            console.error("[CRON ERROR]:" + error.message);
+        }
   });
 };

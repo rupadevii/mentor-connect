@@ -1,9 +1,22 @@
+import { useState } from 'react';
 import { formatDate, formatTime } from '../../utils/helpers';
 import Button from '../ui/Button';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function SessionCard({selectedStatus, session, openModalBook, openModalCancel}) {
     const navigate = useNavigate()
+    const [now, setNow] = useState(Date.now())
+
+    function canJoin(){
+        if(!session.startTime || !session.endTime){
+            return false
+        }
+
+        const start = new Date(session.startTime).getTime()
+        const end = new Date(session.endTime).getTime()
+
+        return now >= start && now <= end
+    }
 
     function navigateToSessionDetailsPage(){
         navigate(`/sessions/${session._id}`)
@@ -68,12 +81,12 @@ export default function SessionCard({selectedStatus, session, openModalBook, ope
                             <a href={session.url}
                             target="_blank"
                             onClick={(e) => e.stopPropagation()}>
-                                <Button disabled={session.status === "COMPLETED"||session.joinee===null} className='text-xs px-3 py-2'>Join</Button>
+                                <Button disabled={session.status === "COMPLETED"|| !canJoin()} className='text-xs px-3 py-2'>Join</Button>
                             </a>
                             {(selectedStatus === "My Bookings" && session.status !== "COMPLETED") && (
                                 <Button variant='secondary' onClick={handleCancelClick} className='text-xs px-3 py-2'>Cancel</Button>
                             )}
-                            {(selectedStatus === "My Sessions" && session.status === "COMPLETED" && (
+                            {(selectedStatus === "My Sessions" && session.status === "COMPLETED" && session.joinee !== null && (
                                 <Button variant='secondary' className='text-xs px-3 py-2' disabled={session.mentorFeedback} onClick={handleMentorFeedbackClick}>Give Feedback</Button>
                             ))}
                             {(selectedStatus === "My Bookings" && session.status === "COMPLETED" && (

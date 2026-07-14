@@ -19,72 +19,52 @@ function App() {
     return (
         <Router>
             <Routes>
-                {/* Auth Routes */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
-                {/* Protected Routes */}
-                <Route
-                    path="/dashboard"
-                    element={
-                        <ProtectedRoute>
-                        <DashboardPage />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/profile"
-                    element={
-                        <ProtectedRoute>
-                        <ProfilePage />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route element={<ProtectedRoute/>}>
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <DashboardPage />
+                        }
+                        />
+                    <Route
+                        path="/profile"
+                        element={
+                            <ProfilePage />
+                        }
+                    />
+                    <Route
+                        path="/create"
+                        element={
+                                <CreateSessionPage/>
+                        }
+                    />
+                    <Route
+                        path="/sessions"
+                        element={
+                                <SessionsPage/>
+                        }
+                    />
+                    <Route
+                        path="/sessions/:id"
+                        element={
+                                <SessionDetailsPage/>
+                        }
+                    />
+                    <Route 
+                        path="/feedback/mentor/:id" 
+                        element={
+                                <MentorFeedbackPage/>
+                        }/>
+                    <Route 
+                        path="/feedback/mentee/:id" 
+                        element={
+                                <MenteeFeedbackPage/>
+                        }/>
+                </Route>
 
-                <Route
-                    path="/create"
-                    element={
-                        <ProtectedRoute>
-                            <CreateSessionPage/>
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/sessions"
-                    element={
-                        <ProtectedRoute>
-                            <SessionsPage/>
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/sessions/:id"
-                    element={
-                        <ProtectedRoute>
-                            <SessionDetailsPage/>
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route 
-                    path="/feedback/mentor/:id" 
-                    element={
-                        <ProtectedRoute>
-                            <MentorFeedbackPage/>
-                        </ProtectedRoute>
-                    }/>
-
-                <Route 
-                    path="/feedback/mentee/:id" 
-                    element={
-                        <ProtectedRoute>
-                            <MenteeFeedbackPage/>
-                        </ProtectedRoute>
-                    }/>
-                
-                {/* Redirect */}
                 <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>

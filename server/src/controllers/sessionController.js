@@ -160,7 +160,8 @@ export const getSessions = asyncHandler (async (req, res) => {
         case allowedTypes[2]: 
             query = {
                 ...query,
-                status: "COMPLETED"
+                status: "COMPLETED",
+                $or: [{createdBy: req.userId}, {joinee: req.userId}]
             };
             break;
         case allowedTypes[3]: 

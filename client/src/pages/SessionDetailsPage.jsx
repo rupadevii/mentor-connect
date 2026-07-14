@@ -20,6 +20,18 @@ export default function SessionDetailsPage() {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
     const navigate = useNavigate()
+    const [now, setNow] = useState(Date.now())
+
+    function canJoin(){
+        if(!session.startTime || !session.endTime){
+            return false
+        }
+
+        const start = new Date(session.startTime).getTime()
+        const end = new Date(session.endTime).getTime()
+
+        return now >= start && now <= end
+    }
 
     function openModalBook(){
         setIsOpen(true)
@@ -98,8 +110,8 @@ export default function SessionDetailsPage() {
         <Layout>
             {success && (<Alert type="success" message={success}/>)}
             {error && (<Alert type="error" message={error}/>)}
-            <Button variant="secondary" onClick={() => navigate('/sessions')} className="mb-4 text-xs px-3 py-2">
-                ← Back to Sessions
+            <Button variant="secondary" onClick={() => navigate(-1)} className="mb-4 text-xs px-3 py-2">
+                ← Back
             </Button>
             <div className="max-w-3xl mx-auto bg-white space-y-4 border px-10 py-7 rounded-xl">
                 {loading ? (
@@ -147,7 +159,7 @@ export default function SessionDetailsPage() {
                                     href={session.url}
                                     target="_blank"
                                 >
-                                    <Button className="text-xs px-3 py-2">Join</Button>
+                                    <Button className="text-xs px-3 py-2" disabled={!canJoin()}>Join</Button>
                                 </a> 
                             )}
 
@@ -163,14 +175,14 @@ export default function SessionDetailsPage() {
                                 </Button>
                             )}
 
-                            {userId && session.createdBy?._id === userId && session.status === 'COMPLETED' && !session.mentorFeedback?.submittedAt && (
+                            {userId && session.createdBy?._id === userId && session.status === 'COMPLETED' && !session.mentorFeedback?.submittedAt && session.joinee && (
                                 <Button variant="secondary" onClick={() => navigate(`/feedback/mentor/${session._id}`)} className="text-xs px-3 py-2">
                                     Give Feedback
                                 </Button>
                             )}
                         </div>
 
-                        {session.status==="COMPLETED" && (
+                        {session.status==="COMPLETED" && session.joinee && (
                             (userId===session.createdBy?._id) || (userId===session.joinee?._id)
                         ) && (
                              <div className="border-t pt-6 space-y-4">
