@@ -227,7 +227,7 @@ export default function SessionDetailsPage() {
 
             {action==="book" && (
                 <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Book Session">
-                    <p>Are you sure you want to book session?</p>
+                    <p>Are you sure you want to book the session?</p>
                     <Button onClick={bookSession}>
                         {booking ? "Booking..." : "Book"}
                     </Button>
@@ -235,7 +235,7 @@ export default function SessionDetailsPage() {
             )}
             {action==="cancel" && (
                 <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Cancel Session">
-                    <p>Are you sure you want to cancel session?</p>
+                    <p>Are you sure you want to cancel the session?</p>
                     <Button variant="danger" onClick={cancelSession}>
                         {cancelling ? "Cancelling..." : "Cancel"}
                     </Button>

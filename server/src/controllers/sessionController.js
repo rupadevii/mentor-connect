@@ -251,7 +251,8 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     ]
 
     const date = new Date()
-    const responses = await Promise.all([
+    
+    const [createdSessions, bookedSessions, latestCreatedSessions, upcomingSessions, statusBreakDown, sessionsGroupedByTopic, bookedSessionsGroupedByTopic, popularTopics] = await Promise.all([
         //sessions created by user (total, completed, cancelled, (booked by others))
         Session.aggregate([
             {
@@ -370,6 +371,8 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
         ])
 
     ])
+
+    const responses = {createdSessions, bookedSessions, latestCreatedSessions, upcomingSessions, statusBreakDown, sessionsGroupedByTopic, bookedSessionsGroupedByTopic, popularTopics}
 
     res.status(200).json({
         data: responses,

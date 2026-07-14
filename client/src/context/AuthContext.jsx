@@ -10,7 +10,6 @@ export const AuthProvider = ({children}) => {
     const getUser = async () => {
         try {
             const response = await api.get('/auth/me');
-            console.log(response.data)
             if(response.data.success){
                 setIsAuthenticated(true)
             }

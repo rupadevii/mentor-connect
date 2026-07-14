@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
     },
     level: {
       type: Number,
-      default: 1, // User starts at level 1
+      default: 2, // User starts at level 1
       min: 1,
       max: 6,
     },
