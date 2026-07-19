@@ -1,20 +1,20 @@
-# 🚀 Accio Mentor Connect - MERN Stack Starter
+# 🚀 Mentor Connect - MERN Stack Session Booking Platform
 
-A beginner-friendly MERN (MongoDB, Express, React, Node.js) starter repository for a mentorship platform with complete authentication system.
+A full-stack MERN (MongoDB, Express, React, Node.js) mentorship platform where mentors create sessions and mentees book them, with a complete two-way feedback system.
 
 ## 🧱 Tech Stack
 
 ### Frontend
 - **React 18** with Vite
 - **React Router DOM** for navigation
-- **Axios** for direct API calls
+- **Axios** via a centralized `api` service abstraction
 - **Tailwind CSS** for styling
 - **Responsive Sidebar** for navigation
 
 ### Backend
-- **Node.js & Express.js**
+- **Node.js & Express.js** (with `asyncHandler` for cleaner controller error handling)
 - **MongoDB with Mongoose**
-- **JWT Authentication** (localStorage-based)
+- **JWT Authentication** stored in HTTP-only cookies (no localStorage — protects against XSS)
 - **bcryptjs** for password hashing
 
 ## 📁 Project Structure
@@ -26,7 +26,7 @@ mentor-connect/
 │   │   ├── config/      # Database configuration
 │   │   ├── controllers/ # Business logic
 │   │   ├── middlewares/ # Auth & error handling
-│   │   ├── models/      # MongoDB schemas
+│   │   ├── models/      # MongoDB schemas (User, Session)
 │   │   ├── routes/      # API routes
 │   │   ├── utils/       # Helper functions
 │   │   └── index.js     # Server entry point
@@ -38,7 +38,7 @@ mentor-connect/
     │   ├── components/  # Reusable components (layout, UI)
     │   ├── pages/       # Page components
     │   ├── routes/      # Protected route logic
-    │   ├── services/    # API client
+    │   ├── services/    # API client (api.js)
     │   ├── utils/       # Helper functions
     │   ├── App.jsx      # Main app component
     │   └── main.jsx     # Entry point
@@ -52,27 +52,41 @@ mentor-connect/
 ### Authentication
 - ✅ User Registration
 - ✅ Login/Logout
-- ✅ JWT stored in localStorage
+- ✅ JWT stored in HTTP-only cookies
 - ✅ Protected routes
 - ✅ Auto-redirect to login when unauthorized
 
 ### User Management
 - ✅ Update profile (name, email)
 - ✅ View current user info
+- ✅ Two roles: Mentor and Mentee
+
+### Sessions
+- ✅ Mentors create sessions (topic, schedule, capacity, etc.)
+- ✅ Mentees browse and book available sessions
+- ✅ A scheduled cron job automatically marks sessions as `COMPLETED` once their end time passes
+
+### Feedback System
+- ✅ Embedded `mentorFeedback` and `menteeFeedback` sub-documents on the Session model
+- ✅ Role-based visibility of feedback (mentors and mentees see different views)
+- ✅ Mentee level-up by mentor
+- ✅ 1–5 star mentee ratings for sessions
 
 ### Frontend Pages
 - ✅ Login Page
 - ✅ Register Page
-- ✅ Dashboard (with sidebar navigation)
+- ✅ Dashboard (role-aware, with sidebar navigation)
+- ✅ Session listing / booking pages
+- ✅ Feedback submission & viewing
 - ✅ Profile (view & edit)
 - ✅ Responsive Sidebar with logout
 
 ### UI Components
-- ✅ Reusable sidebar with navigation
-- ✅ Header with menu toggle
-- ✅ Forms with validation
-- ✅ Alert messages (error/success)
-- ✅ Loading states
+- ✅ Reusable `Button` component (variants: primary, secondary, danger, success)
+- ✅ Form `Input` component
+- ✅ Loading spinner (`Loader`)
+- ✅ Modal dialog
+- ✅ Alert messages (success/error)
 
 ## ⚡ Quick Start
 
@@ -101,7 +115,7 @@ cp .env.example .env
 4. **Update `.env` with your values**
 ```
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/accio-mentor-connect
+MONGODB_URI=mongodb://localhost:27017/mentor-connect
 JWT_SECRET=your_secret_key_here
 JWT_EXPIRY=7d
 CLIENT_URL=http://localhost:5173
@@ -142,24 +156,23 @@ Frontend runs on `http://localhost:5173`
 
 ### Auth Routes
 - `POST /auth/register` - Register new user
-- `POST /auth/login` - Login user
+- `POST /auth/login` - Login user (sets HTTP-only cookie)
+- `POST /auth/logout` - Logout user (clears cookie)
 - `GET /auth/me` - Get current user (protected)
 
 ### User Routes (Protected)
 - `PUT /users/profile` - Update current user profile
-- Go to `/login`
-- Enter credentials
-- Click logout in sidebar
 
-### 3. Forgot Password
-- Go to `/forgot-password`
-- Enter email (requires SMTP setup for email)
-- Check console/email for reset link
+### Session Routes (Protected)
+- `POST /sessions` - Mentor creates a session
+- `GET /sessions` - List available sessions
+- `POST /sessions/:id/book` - Mentee books a session
+- `GET /sessions/:id` - Get session details (includes `canJoin` status)
 
-### 4. Magic Link
-- Go to `/magic-link`
-- Enter email
-- Click link from email (or use token in URL)
+### Feedback Routes (Protected)
+- `POST /sessions/:id/feedback/mentor` - Mentor submits feedback (level-up toggle)
+- `POST /sessions/:id/feedback/mentee` - Mentee submits feedback (star rating)
+- `GET /sessions/:id/feedback` - Get feedback for a session (role-based visibility, double-blind gated)
 
 ## 🎨 UI Components
 
@@ -195,71 +208,36 @@ npm run preview  # Preview production build
 ## 🔒 Security Features
 
 - ✅ Passwords hashed with bcryptjs
-- ✅ JWT in HTTP-only cookies (no XSS vulnerability)
+- ✅ JWT in HTTP-only cookies (mitigates XSS token theft)
 - ✅ CORS configured with credentials
 
 ## 🧪 Authentication Flow
 
 ### 1. Register
 1. Navigate to `/register`
-2. Fill in name, email, password
+2. Fill in name, email, password, and role (mentor/mentee)
 3. Submit form
 4. Redirected to `/dashboard`
-5. Token stored in localStorage
+5. JWT set as an HTTP-only cookie by the server
 
 ### 2. Login
 1. Navigate to `/login`
 2. Enter email and password
 3. Submit form
-4. Token stored in localStorage
+4. JWT set as an HTTP-only cookie by the server
 5. Redirected to `/dashboard`
 
 ### 3. Access Protected Routes
-- Dashboard and Profile pages are protected
-- ProtectedRoute component checks for token
-- If no token, redirected to login
-- Token checked on every route access
+- Dashboard, Sessions, and Profile pages are protected
+- `ProtectedRoute` component checks auth state via `/auth/me`
+- If unauthenticated, redirected to login
 
 ### 4. Logout
 1. Click logout button in sidebar
-2. Token removed from localStorage
+2. Server clears the auth cookie
 3. Redirected to `/login`
 
-## 📝 State Management
-
-No Redux or Context API - components manage their own state:
-- **LoginPage**: form state (`email`, `password`)
-- **RegisterPage**: form state (`name`, `email`, `password`, `passwordConfirm`)
-- **ProfilePage**: form state (`name`, `email`)
-- **DashboardPage**: presentational only
-- **Sidebar**: handles logout directly
-
-Authentication state stored in:
-- **localStorage**: `authToken` (user ID from backend)
-
-## 🔄 API Integration
-
-All API calls made directly from components using Axios:
-
-```javascript
-// Example: LoginPage
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await api.post('/auth/login', formData);
-    localStorage.setItem('authToken', response.data.user.id);
-    navigate('/dashboard');
-  } catch (err) {
-    setError(err.response?.data?.message || 'Login failed');
-  }
-};
-```
-
-**API Configuration:**
-- baseURL: `http://localhost:5000`
-- withCredentials: `true` (for cookies if needed)
-
-## 💾 Database Schema
+## 💾 Database Schema (Simplified)
 
 ### User Model
 ```javascript
@@ -267,6 +245,28 @@ const handleSubmit = async (e) => {
   name: String (required),
   email: String (required, unique),
   password: String (required, hashed),
+  role: String (enum: 'mentor' | 'mentee'),
+  createdAt: Date (auto),
+  updatedAt: Date (auto)
+}
+```
+
+### Session Model
+```javascript
+{
+  mentor: ObjectId (ref: User),
+  mentee: ObjectId (ref: User),
+  topic: String,
+  startTime: Date,
+  endTime: Date,
+  mentorFeedback: {
+    levelUp: Boolean,      // binary yes/no toggle
+    submittedAt: Date
+  },
+  menteeFeedback: {
+    rating: Number,        // 1-5 stars
+    submittedAt: Date
+  },
   createdAt: Date (auto),
   updatedAt: Date (auto)
 }
@@ -281,6 +281,8 @@ App
 │   ├── Header (menu toggle, title)
 │   └── Page Content
 │       ├── Dashboard
+│       ├── Sessions (list/book/create)
+│       ├── Feedback
 │       └── Profile
 └── Auth Pages (no layout)
     ├── LoginPage
@@ -289,63 +291,9 @@ App
 
 ## 🚀 Deployment
 
-### Backend (Heroku/Railway)
-1. Deploy to platform
-2. Set environment variables
-3. MongoDB connection string
+#### Backend - Render
+#### Frontend - Vercel
 
-### Frontend (Vercel/Netlify)
-1. Run `npm run build`
-2. Deploy dist folder or connect Git repo
-3. Set API URL if deploying to different server
+## 🛠️ Limitations
 
-## 📚 Common Tasks
-
-### Add a New Page
-1. Create component in `src/pages/`
-2. Add route in `App.jsx`
-3. Wrap with `ProtectedRoute` if needed
-4. Add to sidebar menu in `Sidebar.jsx`
-
-### Add a New API Call
-1. Use `api` from `src/services/api.js`
-2. Example: `await api.post('/endpoint', data)`
-3. Handle errors with try/catch
-4. Update localStorage if needed
-
-### Customize Styling
-- Tailwind CSS classes in components
-- Theme colors in `tailwind.config.js`
-- Global styles in `index.css`
-
-## 🐛 Troubleshooting
-
-### "Could not find module" errors
-```bash
-cd client
-rm -rf node_modules package-lock.json
-npm install
-npm run dev
-```
-
-### Authentication not working
-- Check localStorage has `authToken` after login
-- Verify backend is running on port 5000
-- Check network tab in browser DevTools
-
-### Sidebar not appearing
-- Make sure you're on a protected route
-- Check ProtectedRoute wrapper exists
-- Verify token is in localStorage
-
-### API calls failing
-- Check backend server is running
-- Verify `.env` API URL matches backend
-- Check CORS is enabled in backend
-
-## 📄 License
-
-MIT - Feel free to use for learning and projects!
-
-**Happy Coding! 🎉**
-
+**Email notifications are not functional in production.** The feature (session reminders) was built with Nodemailer, but Render's hosting blocks the outbound SMTP ports Nodemailer needs. A production-ready fix would involve switching to an HTTP-based email API (e.g. Resend/SendGrid), which requires a verified sending domain — out of scope for this project for now. Functional during development

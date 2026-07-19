@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDate, formatTime } from '../../utils/helpers';
 import Button from '../ui/Button';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,6 +6,12 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function SessionCard({selectedStatus, session, openModalBook, openModalCancel}) {
     const navigate = useNavigate()
     const [now, setNow] = useState(Date.now())
+
+    useEffect(() => {
+        const interval = setInterval(() => setNow(Date.now()), 60 * 1000);
+        return () => clearInterval(interval);
+    }, []);
+
 
     function canJoin(){
         if(!session.startTime || !session.endTime){
@@ -15,7 +21,7 @@ export default function SessionCard({selectedStatus, session, openModalBook, ope
         const start = new Date(session.startTime).getTime()
         const end = new Date(session.endTime).getTime()
 
-        return now >= start && now <= end
+        return now >= (start-10*60*1000) && now <= end
     }
 
     function navigateToSessionDetailsPage(){

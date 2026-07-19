@@ -12,7 +12,7 @@ const Input = ({
   required = false,
 }) => {
   return (
-    <div className="mb-5">
+    <div className="mb-3">
       {label && (
         <label className="block text-sm font-medium text-slate-700 mb-2">
           {label}
